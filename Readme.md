@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Никита](https://up.htmlacademy.ru/javascript/19/user/895771).
-* Наставник: `Неизвестно`.
+* Наставник: [Анастасия :) Ничипорчук](https://github.com/AngryFennec).
 
 ---
 
