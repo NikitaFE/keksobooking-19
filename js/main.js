@@ -2,8 +2,8 @@
 
 var MAP = document.querySelector('.map');
 var PIN_TEMPLATE = document.querySelector('#pin')
-                            .content
-                            .querySelector('.map__pin');
+  .content
+  .querySelector('.map__pin');
 var OFFERS = 8;
 var OFFERS_DATA = {
   titles: ['Hostel Podolski Parus', 'On Lev Tolstoy Square', 'Отель Верховина', 'Хостел LEON Киев', 'low kick', 'irisHotels', 'Mini Hotel near Arena City', 'Fire Inn', 'Роял Сити Отель', 'SMART HOUSE hotel'],
