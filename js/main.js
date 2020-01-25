@@ -25,8 +25,6 @@ var OFFERS_DATA = {
   photos: ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']
 };
 
-
-
 function getRandom(n) {
   return Math.floor(Math.random() * n);
 }
@@ -34,7 +32,7 @@ function getRandom(n) {
 function getRandomWithoutZero(n) {
   var random = getRandom(n);
 
-  if(!n) {
+  if (!n) {
     return 'Ошибка: количество не может быть меньше еденицы';
   }
 
@@ -99,27 +97,27 @@ function generateOfferLocation(min, max, n) {
 
 function generateOffer(avatar, i, x, y) {
   var obj = {
-    author: {
-      avatar
+    'author': {
+      avatar: avatar // Пришлось написать avatar: avatar, потому что линтер ругается на просто avatar :(
     },
-    offer: {
-      title: OFFERS_DATA.titles[i],
-      address: getRandomWithoutZero(12) * 30 + ', ' + getRandomWithoutZero(12) * 15,
-      price: getRandomWithoutZero(12) * 50,
-      type: OFFERS_DATA.types[getRandom(OFFERS_DATA.types.length)],
-      rooms: getRandomWithoutZero(4),
-      guests: getRandomWithoutZero(8),
-      checkin: OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
-      checkout: OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
-      features: generateFeatures(getRandomWithoutZero(5), 'features'),
-      description: OFFERS_DATA.descriptions[i],
-      photos: generateFeatures(getRandomWithoutZero(10), 'photos')
+    'offer': {
+      'title': OFFERS_DATA.titles[i],
+      'address': getRandomWithoutZero(12) * 30 + ', ' + getRandomWithoutZero(12) * 15,
+      'price': getRandomWithoutZero(12) * 50,
+      'type': OFFERS_DATA.types[getRandom(OFFERS_DATA.types.length)],
+      'rooms': getRandomWithoutZero(4),
+      'guests': getRandomWithoutZero(8),
+      'checkin': OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
+      'checkout': OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
+      'features': generateFeatures(getRandomWithoutZero(5), 'features'),
+      'description': OFFERS_DATA.descriptions[i],
+      'photos': generateFeatures(getRandomWithoutZero(10), 'photos')
     },
-    location: {
-      x,
-      y
+    'location': {
+      x: x,
+      y: y
     }
-  }
+  };
 
   return obj;
 }
