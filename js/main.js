@@ -69,8 +69,9 @@ function generateAvatar(n) {
   var randomNumbers = generateArrayRandomNumber(1, n);
 
   for (var i = 0; i < randomNumbers.length; i++) {
-    avatars.push('img/avatars/user0' + randomNumbers[i]);
+    avatars.push('img/avatars/user0' + randomNumbers[i] + '.png');
   }
+
   return avatars;
 }
 
@@ -92,6 +93,7 @@ function generateOfferLocation(min, max, n) {
   for (var i = 0; i < n; i++) {
     arr.push(randomNumbers[i]);
   }
+
   return arr;
 }
 
@@ -136,12 +138,31 @@ function generateOffers(n) {
   return arr;
 }
 
+function generatePin(data) {
+  var offerElement = PIN_TEMPLATE.cloneNode(true);
+
+  offerElement.style = 'left: ' + data.location.x + 'px; top: ' + data.location.y + 'px;';
+  offerElement.querySelector('img').src = data.author.avatar;
+  offerElement.querySelector('img').alt = data.offer.title;
+
+  return offerElement;
+}
+
+function generatePins(data) {
+  var FRAGMENT = document.createDocumentFragment();
+
+  for (var i = 0; i < data.length; i++) {
+    FRAGMENT.appendChild(generatePin(data[i]));
+  }
+
+  return FRAGMENT;
+}
+
 function showMap() {
   MAP.classList.remove('map--faded');
-  generateOffers(OFFERS);
+  var OFFERS_ARRAY = generateOffers(OFFERS);
+  var PINS = generatePins(OFFERS_ARRAY);
+  MAP.querySelector('.map__pins').appendChild(PINS);
 }
 
 showMap();
-
-console.log( generateOffers(OFFERS));
-console.log(PIN_TEMPLATE);
