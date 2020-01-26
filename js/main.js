@@ -1,7 +1,7 @@
 'use strict';
 
-var MAP = document.querySelector('.map');
-var PIN_TEMPLATE = document.querySelector('#pin')
+var map = document.querySelector('.map');
+var pinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
 var OFFERS = 8;
@@ -24,47 +24,53 @@ var OFFERS_DATA = {
   ],
   photos: ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg']
 };
+var MULTIPLIER = 12;
+var ADDRESS_X_MIN = 30;
+var ADDRESS_Y_MIN = 15;
+var PRICE_MIN = 50;
+var ROOMS_MAX = 4;
+var GUESTS_MAX = 8;
+var FEATURES_MAX = 5;
+var PHOTOS_MAX = 10;
+var Y_MAX = 630;
+var Y_MIN = 130;
+var OFFERS_ARRAY = generateOffers(OFFERS);
+var PINS = generatePins(OFFERS_ARRAY);
 
-function getRandom(n) {
-  return Math.floor(Math.random() * n);
+function getRandom(min, max) {
+  return Math.floor(Math.random() * (max - min) + min);
 }
 
-function getRandomWithoutZero(n) {
-  var random = getRandom(n);
+function createSequenceArray(min, max) {
+  var arr = [];
+  var temp = min - 1;
 
-  if (!n) {
-    return 'Ошибка: количество не может быть меньше еденицы';
+  while (arr.length < max - temp) {
+    arr.push(min);
+    min++;
   }
 
-  while (!random) {
-    random = getRandom(n);
-  }
-
-  return random;
+  return arr;
 }
 
-function generateArrayRandomNumber(min, max) {
-  var totalNumbers = max - min + 1;
-  var arrayTotalNumbers = [];
-  var arrayRandomNumbers = [];
-  var tempRandomNumber;
+function createNoRepeatNumbers(min, max) {
+  var arr = createSequenceArray(min, max);
+  var j = 0;
+  var temp = 0;
 
-  while (totalNumbers--) {
-    arrayTotalNumbers.push(totalNumbers + min);
+  for (var i = arr.length - 1; i > 0; i--) {
+    j = Math.floor(Math.random() * (i + 1));
+    temp = arr[j];
+    arr[j] = arr[i];
+    arr[i] = temp;
   }
 
-  while (arrayTotalNumbers.length) {
-    tempRandomNumber = getRandom(arrayTotalNumbers.length - 1);
-    arrayRandomNumbers.push(arrayTotalNumbers[tempRandomNumber]);
-    arrayTotalNumbers.splice(tempRandomNumber, 1);
-  }
-
-  return arrayRandomNumbers;
+  return arr;
 }
 
 function generateAvatar(n) {
   var avatars = [];
-  var randomNumbers = generateArrayRandomNumber(1, n);
+  var randomNumbers = createNoRepeatNumbers(1, n);
 
   for (var i = 0; i < randomNumbers.length; i++) {
     avatars.push('img/avatars/user0' + randomNumbers[i] + '.png');
@@ -78,44 +84,33 @@ function generateFeatures(n, objKey) {
 
   for (var i = 0; i < n; i++) {
 
-    arr.push(OFFERS_DATA[objKey][getRandom(OFFERS_DATA[objKey].length)]);
+    arr.push(OFFERS_DATA[objKey][getRandom(0, OFFERS_DATA[objKey].length)]);
   }
 
   return arr;
 }
 
-function generateOfferLocation(min, max, n) {
-  var arr = [];
-  var randomNumbers = generateArrayRandomNumber(min, max);
-
-  for (var i = 0; i < n; i++) {
-    arr.push(randomNumbers[i]);
-  }
-
-  return arr;
-}
-
-function generateOffer(avatar, i, x, y) {
+function generateOffer(avatar, i) {
   var obj = {
     'author': {
-      avatar: avatar // Пришлось написать avatar: avatar, потому что линтер ругается на просто avatar :(
+      avatar: avatar
     },
     'offer': {
       'title': OFFERS_DATA.titles[i],
-      'address': getRandomWithoutZero(12) * 30 + ', ' + getRandomWithoutZero(12) * 15,
-      'price': getRandomWithoutZero(12) * 50,
-      'type': OFFERS_DATA.types[getRandom(OFFERS_DATA.types.length)],
-      'rooms': getRandomWithoutZero(4),
-      'guests': getRandomWithoutZero(8),
-      'checkin': OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
-      'checkout': OFFERS_DATA.time[getRandom(OFFERS_DATA.time.length)],
-      'features': generateFeatures(getRandomWithoutZero(5), 'features'),
+      'address': getRandom(1, MULTIPLIER) * ADDRESS_X_MIN + ', ' + getRandom(1, MULTIPLIER) * ADDRESS_Y_MIN,
+      'price': getRandom(1, MULTIPLIER) * PRICE_MIN,
+      'type': OFFERS_DATA.types[getRandom(0, OFFERS_DATA.types.length)],
+      'rooms': getRandom(1, ROOMS_MAX),
+      'guests': getRandom(1, GUESTS_MAX),
+      'checkin': OFFERS_DATA.time[getRandom(0, OFFERS_DATA.time.length)],
+      'checkout': OFFERS_DATA.time[getRandom(0, OFFERS_DATA.time.length)],
+      'features': generateFeatures(getRandom(1, FEATURES_MAX), 'features'),
       'description': OFFERS_DATA.descriptions[i],
-      'photos': generateFeatures(getRandomWithoutZero(10), 'photos')
+      'photos': generateFeatures(getRandom(1, PHOTOS_MAX), 'photos')
     },
     'location': {
-      x: x,
-      y: y
+      x: getRandom(0, map.offsetWidth),
+      y: getRandom(Y_MIN, Y_MAX)
     }
   };
 
@@ -125,42 +120,40 @@ function generateOffer(avatar, i, x, y) {
 function generateOffers(n) {
   var arr = [];
   var avatars = generateAvatar(n);
-  var randomNumbers = generateArrayRandomNumber(1, n);
-  var offerX = generateOfferLocation(0, MAP.offsetWidth, n);
-  var offerY = generateOfferLocation(130, 630, n);
+  var randomNumbers = createNoRepeatNumbers(1, n);
 
   for (var i = 0; i < n; i++) {
-    arr.push(generateOffer(avatars[i], randomNumbers[i], offerX[i], offerY[i]));
+    arr.push(generateOffer(avatars[i], randomNumbers[i]));
   }
 
   return arr;
 }
 
 function generatePin(data) {
-  var offerElement = PIN_TEMPLATE.cloneNode(true);
+  var offerElement = pinTemplate.cloneNode(true);
+  var pinImg = offerElement.querySelector('img');
 
-  offerElement.style = 'left: ' + data.location.x + 'px; top: ' + data.location.y + 'px;';
-  offerElement.querySelector('img').src = data.author.avatar;
-  offerElement.querySelector('img').alt = data.offer.title;
+  //  забыл про корректировку метки, исправил
+  offerElement.style = 'left: ' + (data.location.x - pinImg.getAttribute('width') / 2) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
+  pinImg.src = data.author.avatar;
+  pinImg.alt = data.offer.title;
 
   return offerElement;
 }
 
-function generatePins(data) {
-  var FRAGMENT = document.createDocumentFragment();
-
-  for (var i = 0; i < data.length; i++) {
-    FRAGMENT.appendChild(generatePin(data[i]));
+function fillFragment(fragment, arr) {
+  for (var i = 0; i < arr.length; i++) {
+    fragment.appendChild(generatePin(arr[i]));
   }
-
-  return FRAGMENT;
 }
 
-function showMap() {
-  MAP.classList.remove('map--faded');
-  var OFFERS_ARRAY = generateOffers(OFFERS);
-  var PINS = generatePins(OFFERS_ARRAY);
-  MAP.querySelector('.map__pins').appendChild(PINS);
+function generatePins(data) {
+  var fragment = document.createDocumentFragment();
+
+  fillFragment(fragment, data);
+
+  return fragment;
 }
 
-showMap();
+map.classList.remove('map--faded');
+map.querySelector('.map__pins').appendChild(PINS);
