@@ -1,10 +1,6 @@
 'use strict';
 
-var map = document.querySelector('.map');
-var pinTemplate = document.querySelector('#pin')
-  .content
-  .querySelector('.map__pin');
-var OFFERS = 8;
+var OFFERS_NUMBER = 8;
 var OFFERS_DATA = {
   titles: ['Hostel Podolski Parus', 'On Lev Tolstoy Square', 'Отель Верховина', 'Хостел LEON Киев', 'low kick', 'irisHotels', 'Mini Hotel near Arena City', 'Fire Inn', 'Роял Сити Отель', 'SMART HOUSE hotel'],
   types: ['palace', 'flat', 'house', 'bungalo'],
@@ -34,8 +30,14 @@ var FEATURES_MAX = 5;
 var PHOTOS_MAX = 10;
 var Y_MAX = 630;
 var Y_MIN = 130;
-var OFFERS_ARRAY = generateOffers(OFFERS);
-var PINS = generatePins(OFFERS_ARRAY);
+var map = document.querySelector('.map');
+var pinTemplate = document.querySelector('#pin')
+.content
+.querySelector('.map__pin');
+var pinImg = pinTemplate.querySelector('img');
+var halfPinImgWidth = pinImg.getAttribute('width') / 2;
+var offersArray;
+var pins;
 
 function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
@@ -43,11 +45,9 @@ function getRandom(min, max) {
 
 function createSequenceArray(min, max) {
   var arr = [];
-  var temp = min - 1;
 
-  while (arr.length < max - temp) {
-    arr.push(min);
-    min++;
+  for (var i = min; i <= max; i++) {
+    arr.push(i);
   }
 
   return arr;
@@ -90,6 +90,14 @@ function generateFeatures(n, objKey) {
   return arr;
 }
 
+function generateAddress(multiplier, addressX, addressY) {
+  return getRandom(1, multiplier) * addressX + ', ' + getRandom(1, multiplier) * addressY;
+}
+
+function generatePrice(multiplier, priceMin) {
+  return getRandom(1, multiplier) *  priceMin;
+}
+
 function generateOffer(avatar, i) {
   var obj = {
     'author': {
@@ -97,8 +105,8 @@ function generateOffer(avatar, i) {
     },
     'offer': {
       'title': OFFERS_DATA.titles[i],
-      'address': getRandom(1, MULTIPLIER) * ADDRESS_X_MIN + ', ' + getRandom(1, MULTIPLIER) * ADDRESS_Y_MIN,
-      'price': getRandom(1, MULTIPLIER) * PRICE_MIN,
+      'address':  generateAddress(MULTIPLIER, ADDRESS_X_MIN, ADDRESS_Y_MIN),
+      'price': generatePrice(MULTIPLIER, PRICE_MIN),
       'type': OFFERS_DATA.types[getRandom(0, OFFERS_DATA.types.length)],
       'rooms': getRandom(1, ROOMS_MAX),
       'guests': getRandom(1, GUESTS_MAX),
@@ -109,7 +117,7 @@ function generateOffer(avatar, i) {
       'photos': generateFeatures(getRandom(1, PHOTOS_MAX), 'photos')
     },
     'location': {
-      x: getRandom(0, map.offsetWidth),
+      x: getRandom(halfPinImgWidth, map.offsetWidth - halfPinImgWidth), //  Корректировка меток, чтобы изображения не выходили за край.
       y: getRandom(Y_MIN, Y_MAX)
     }
   };
@@ -126,15 +134,14 @@ function generateOffers(n) {
     arr.push(generateOffer(avatars[i], randomNumbers[i]));
   }
 
-  return arr;
+  offersArray = arr;
 }
 
 function generatePin(data) {
   var offerElement = pinTemplate.cloneNode(true);
-  var pinImg = offerElement.querySelector('img');
 
   //  забыл про корректировку метки, исправил
-  offerElement.style = 'left: ' + (data.location.x - pinImg.getAttribute('width') / 2) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
+  offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
   pinImg.src = data.author.avatar;
   pinImg.alt = data.offer.title;
 
@@ -152,8 +159,11 @@ function generatePins(data) {
 
   fillFragment(fragment, data);
 
-  return fragment;
+  pins = fragment;
 }
 
+generateOffers(OFFERS_NUMBER);
+generatePins(offersArray);
+console.log(offersArray);
 map.classList.remove('map--faded');
-map.querySelector('.map__pins').appendChild(PINS);
+map.querySelector('.map__pins').appendChild(pins);
