@@ -267,7 +267,6 @@ function generatePins(data) {
 
 generateOffers(OFFERS_NUMBER);
 generatePins(offersArray);
-console.log(offersArray);
 map.classList.remove('map--faded');
 map.querySelector('.map__pins').appendChild(pins);
 map.insertBefore(generateCard(offersArray[0]), filtersContainer);
