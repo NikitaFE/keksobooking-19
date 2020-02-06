@@ -30,6 +30,7 @@ var FEATURES_MAX = 5;
 var PHOTOS_MAX = 3;
 var Y_MAX = 630;
 var Y_MIN = 130;
+
 var map = document.querySelector('.map');
 var pinTemplate = document.querySelector('#pin')
   .content
@@ -40,6 +41,7 @@ var cardTemplate = document.querySelector('#card')
 var pinImg = pinTemplate.querySelector('img');
 var filtersContainer = map.querySelector('.map__filters-container');
 var halfPinImgWidth = pinImg.getAttribute('width') / 2;
+
 var offersArray;
 var pins;
 
@@ -267,6 +269,127 @@ function generatePins(data) {
 
 generateOffers(OFFERS_NUMBER);
 generatePins(offersArray);
-map.classList.remove('map--faded');
-map.querySelector('.map__pins').appendChild(pins);
-map.insertBefore(generateCard(offersArray[0]), filtersContainer);
+// map.querySelector('.map__pins').appendChild(pins);
+// map.insertBefore(generateCard(offersArray[0]), filtersContainer);
+
+/*  module4-task2  */
+
+var ENTER_KEYCODE = 13;
+var PIN_TIP_HEIGTH = 16;
+
+var mainPin = document.querySelector('.map__pin--main');
+var mainForm = document.querySelector('.ad-form');
+var roomsSelect = mainForm.elements.rooms;
+var capacitySelect = mainForm.elements.capacity;
+var mainFormFieldsets = mainForm.querySelectorAll('fieldset');
+var filterFormElements = document.querySelectorAll('.map__filters > select');
+var filterFieldset = document.querySelector('.map__filters > fieldset');
+
+var mainPinX;
+var mainPinY;
+
+function setDisabled(someNode) {
+  someNode.setAttribute('disabled', true);
+}
+
+function setDisabledAll(collection) {
+  collection.forEach(function(el) {
+    setDisabled(el);
+  })
+}
+
+function offDisabled(someNode) {
+  someNode.disabled = false;
+}
+
+function offDisabledAll(collection) {
+  collection.forEach(function(el) {
+    offDisabled(el);
+  })
+}
+
+setDisabledAll(mainFormFieldsets);
+setDisabledAll(filterFormElements);
+setDisabled(filterFieldset);
+
+function getActive() {
+  map.classList.remove('map--faded');
+  mainForm.classList.remove('ad-form--disabled');
+  offDisabledAll(mainFormFieldsets);
+  offDisabledAll(filterFormElements);
+  offDisabled(filterFieldset);
+  setAddress();
+}
+
+function onActiveClick(evt) {
+  if(!evt.button) {
+    getActive();
+  }
+}
+
+function onActivePress(evt) {
+  if(evt.keyCode === ENTER_KEYCODE) {
+    getActive();
+  }
+}
+
+function getMainPinCoordinates() {
+  var mainPinCoords = mainPin.getBoundingClientRect();
+  mainPinX = mainPinCoords.x + pageXOffset;
+  mainPinY = mainPinCoords.y + pageYOffset;
+}
+
+function setAddress() {
+  getMainPinCoordinates();
+
+  var MAIN_PIN_WIDTH = mainPin.querySelector('img').offsetWidth;
+  var MAIN_PIN_HEIGHT = mainPin.querySelector('img').offsetHeight;
+
+  var mainPinXCenter = MAIN_PIN_WIDTH / 2;
+  var mainPinYCenter = MAIN_PIN_HEIGHT + PIN_TIP_HEIGTH;
+  var ADDRESS_X = mainPinX + mainPinXCenter;
+  var ADDRESS_Y = mainPinY + mainPinYCenter;
+
+  mainForm.elements.address.value = ADDRESS_X + ', ' + ADDRESS_Y;
+}
+
+function compareRoomsWithGuests() {
+
+  switch (roomsSelect.value) {
+    case 100:
+      if(capacitySelect.value) {
+        capacitySelect.setCustomValidity('Нет столько комнат');
+      }
+      break;
+    case 1:
+    case 2:
+    case 3:
+      if(roomsSelect.value < capacitySelect.value) {
+        capacitySelect.setCustomValidity('Введите корректное значение: 1 комната - не более 1 гостя');
+      }
+      break;
+
+    default:
+      capacitySelect.setCustomValidity('');
+      break;
+  }
+
+  // if(roomsSelect.value === 100 && capacitySelect.value) {
+  //   capacitySelect.setCustomValidity('Нет столько комнат');
+  // } else if (roomsSelect.value < capacitySelect.value) {
+  //   capacitySelect.setCustomValidity('Введите корректное значение: 1 комната - не более 1 гостя');
+  // } else {
+  //   capacitySelect.setCustomValidity('');
+  // }
+}
+
+function onSelectCange() {
+  compareRoomsWithGuests();
+}
+
+mainPin.addEventListener('mousedown', onActiveClick);
+mainPin.addEventListener('keydown', onActivePress);
+mainForm.querySelector('button[type=submit]').addEventListener('click', onSelectCange);
+setAddress();
+
+/*  module4-task2  */
