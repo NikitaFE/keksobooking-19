@@ -293,9 +293,9 @@ function setDisabled(someNode) {
 }
 
 function setDisabledAll(collection) {
-  collection.forEach(function(el) {
+  collection.forEach(function (el) {
     setDisabled(el);
-  })
+  });
 }
 
 function offDisabled(someNode) {
@@ -303,9 +303,9 @@ function offDisabled(someNode) {
 }
 
 function offDisabledAll(collection) {
-  collection.forEach(function(el) {
+  collection.forEach(function (el) {
     offDisabled(el);
-  })
+  });
 }
 
 setDisabledAll(mainFormFieldsets);
@@ -322,13 +322,13 @@ function getActive() {
 }
 
 function onActiveClick(evt) {
-  if(!evt.button) {
+  if (!evt.button) {
     getActive();
   }
 }
 
 function onActivePress(evt) {
-  if(evt.keyCode === ENTER_KEYCODE) {
+  if (evt.keyCode === ENTER_KEYCODE) {
     getActive();
   }
 }
@@ -354,17 +354,18 @@ function setAddress() {
 }
 
 function compareRoomsWithGuests() {
-
-  switch (roomsSelect.value) {
+  switch (parseInt(roomsSelect.value, 10)) {
     case 100:
-      if(capacitySelect.value) {
+      if (parseInt(capacitySelect.value, 10) !== 0) {
         capacitySelect.setCustomValidity('Нет столько комнат');
+      } else {
+        capacitySelect.setCustomValidity('');
       }
       break;
     case 1:
     case 2:
     case 3:
-      if(roomsSelect.value < capacitySelect.value) {
+      if (roomsSelect.value < capacitySelect.value) {
         capacitySelect.setCustomValidity('Введите корректное значение: 1 комната - не более 1 гостя');
       }
       break;
@@ -373,23 +374,16 @@ function compareRoomsWithGuests() {
       capacitySelect.setCustomValidity('');
       break;
   }
-
-  // if(roomsSelect.value === 100 && capacitySelect.value) {
-  //   capacitySelect.setCustomValidity('Нет столько комнат');
-  // } else if (roomsSelect.value < capacitySelect.value) {
-  //   capacitySelect.setCustomValidity('Введите корректное значение: 1 комната - не более 1 гостя');
-  // } else {
-  //   capacitySelect.setCustomValidity('');
-  // }
 }
 
-function onSelectCange() {
+function onSelectChange() {
   compareRoomsWithGuests();
 }
 
 mainPin.addEventListener('mousedown', onActiveClick);
 mainPin.addEventListener('keydown', onActivePress);
-mainForm.querySelector('button[type=submit]').addEventListener('click', onSelectCange);
+roomsSelect.addEventListener('change', onSelectChange);
+capacitySelect.addEventListener('change', onSelectChange);
 setAddress();
 
 /*  module4-task2  */
