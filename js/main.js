@@ -276,6 +276,10 @@ generatePins(offersArray);
 
 var ENTER_KEYCODE = 13;
 var PIN_TIP_HEIGTH = 16;
+var MSG_NO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
+var MSG_ONE_GUEST = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя';
+var MSG_TWO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей';
+var MSG_THREE_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей';
 
 var mainPin = document.querySelector('.map__pin--main');
 var mainForm = document.querySelector('.ad-form');
@@ -354,26 +358,34 @@ function setAddress() {
 }
 
 function compareRoomsWithGuests() {
-  switch (parseInt(roomsSelect.value, 10)) {
-    case 100:
-      if (parseInt(capacitySelect.value, 10) !== 0) {
-        capacitySelect.setCustomValidity('Нет столько комнат');
-      } else {
-        capacitySelect.setCustomValidity('');
-      }
-      break;
-    case 1:
-    case 2:
-    case 3:
-      if (roomsSelect.value < capacitySelect.value) {
-        capacitySelect.setCustomValidity('Введите корректное значение: 1 комната - не более 1 гостя');
-      }
-      break;
+  var msg = '';
+  var roomsNumber = parseInt(roomsSelect.value, 10);
+  var guestsNumber = parseInt(capacitySelect.value, 10);
 
-    default:
-      capacitySelect.setCustomValidity('');
+  switch (roomsNumber) {
+    case 1:
+      if (guestsNumber !== 1) {
+        msg = MSG_ONE_GUEST;
+      }
+      break;
+    case 2:
+      if (guestsNumber !== 1 && guestsNumber !== 2) {
+        msg = MSG_TWO_GUESTS;
+      }
+      break;
+    case 3:
+      if (guestsNumber !== 1 && guestsNumber !== 2 && guestsNumber !== 3) {
+        msg = MSG_THREE_GUESTS;
+      }
+      break;
+    case 100:
+      if (guestsNumber !== 0) {
+        msg = MSG_NO_GUESTS;
+      }
       break;
   }
+
+  capacitySelect.setCustomValidity(msg);
 }
 
 function onSelectChange() {
