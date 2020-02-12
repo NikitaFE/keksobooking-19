@@ -276,10 +276,15 @@ generatePins(offersArray);
 
 var ENTER_KEYCODE = 13;
 var PIN_TIP_HEIGTH = 16;
-var MSG_NO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
-var MSG_ONE_GUEST = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя';
-var MSG_TWO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей';
-var MSG_THREE_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей';
+var ROOMS_INFO = {
+  amount: [1, 2, 3, 100],
+  messages: [
+    'Для указанного количества комнат можно выбрать количество мест: не для гостей',
+    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя',
+    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей',
+    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей'
+  ]
+}
 
 var mainPin = document.querySelector('.map__pin--main');
 var mainForm = document.querySelector('.ad-form');
@@ -363,24 +368,24 @@ function compareRoomsWithGuests() {
   var guestsNumber = parseInt(capacitySelect.value, 10);
 
   switch (roomsNumber) {
-    case 1:
-      if (guestsNumber !== 1) {
-        msg = MSG_ONE_GUEST;
+    case ROOMS_INFO.amount[0]:
+      if (guestsNumber !== ROOMS_INFO.amount[0]) {
+        msg = ROOMS_INFO.messages[1];
       }
       break;
-    case 2:
-      if (guestsNumber !== 1 && guestsNumber !== 2) {
-        msg = MSG_TWO_GUESTS;
+    case ROOMS_INFO.amount[1]:
+      if (guestsNumber !== ROOMS_INFO.amount[0] && guestsNumber !== ROOMS_INFO.amount[1]) {
+        msg = ROOMS_INFO.messages[2];
       }
       break;
-    case 3:
-      if (guestsNumber !== 1 && guestsNumber !== 2 && guestsNumber !== 3) {
-        msg = MSG_THREE_GUESTS;
+    case ROOMS_INFO.amount[2]:
+      if (guestsNumber !== ROOMS_INFO.amount[0] && guestsNumber !== ROOMS_INFO.amount[1] && guestsNumber !== ROOMS_INFO.amount[2]) {
+        msg = ROOMS_INFO.messages[3];
       }
       break;
-    case 100:
+    case ROOMS_INFO.amount[3]:
       if (guestsNumber !== 0) {
-        msg = MSG_NO_GUESTS;
+        msg = ROOMS_INFO.messages[0];
       }
       break;
   }
