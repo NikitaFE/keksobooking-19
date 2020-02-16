@@ -124,7 +124,7 @@ function generateOffer(avatar, i) {
       'photos': generateFeatures(getRandom(1, PHOTOS_MAX), 'photos')
     },
     'location': {
-      x: getRandom(halfPinImgWidth, map.offsetWidth - halfPinImgWidth), //  Корректировка меток, чтобы изображения не выходили за край.
+      x: getRandom(halfPinImgWidth, map.offsetWidth - halfPinImgWidth),
       y: getRandom(Y_MIN, Y_MAX)
     }
   };
@@ -144,10 +144,11 @@ function generateOffers(n) {
   offersArray = arr;
 }
 
-function generatePin(data) {
+function generatePin(data, n) {
   var offerElement = pinTemplate.cloneNode(true);
+  var pinImg = offerElement.querySelector('img');
 
-  //  забыл про корректировку метки, исправил
+  offerElement.setAttribute('data-id', n);
   offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
   pinImg.src = data.author.avatar;
   pinImg.alt = data.offer.title;
@@ -171,7 +172,6 @@ function translateType(type) {
   }
 }
 
-//  Немного склонений мне в код.
 function generateRoomsAndGuestsText(rooms, guests) {
   var text = '';
 
@@ -180,7 +180,7 @@ function generateRoomsAndGuestsText(rooms, guests) {
   } else if (rooms < 5) {
     text += rooms + ' комнаты для ';
   } else {
-    text += rooms + ' комнат для '; //  Если кто-то поменяет константу на большее значение.
+    text += rooms + ' комнат для ';
   }
 
   if (guests < 2) {
@@ -236,9 +236,10 @@ function generatePhotosNode(photos) {
   return divElements;
 }
 
-function generateCard(data) {
+function generateCard(data, n) {
   var offerElement = cardTemplate.cloneNode(true);
 
+  offerElement.setAttribute('data-id', n);
   offerElement.querySelector('.popup__title').textContent = data.offer.title;
   offerElement.querySelector('.popup__text--address').textContent = data.offer.address;
   offerElement.querySelector('.popup__text--price').textContent = data.offer.price + 'U+20BD/ночь';
@@ -255,7 +256,7 @@ function generateCard(data) {
 
 function fillFragment(fragment, arr) {
   for (var i = 0; i < arr.length; i++) {
-    fragment.appendChild(generatePin(arr[i]));
+    fragment.appendChild(generatePin(arr[i], i));
   }
 }
 
@@ -269,8 +270,6 @@ function generatePins(data) {
 
 generateOffers(OFFERS_NUMBER);
 generatePins(offersArray);
-// map.querySelector('.map__pins').appendChild(pins);
-// map.insertBefore(generateCard(offersArray[0]), filtersContainer);
 
 /*  module4-task2  */
 
@@ -327,6 +326,7 @@ function getActive() {
   offDisabledAll(mainFormFieldsets);
   offDisabledAll(filterFormElements);
   offDisabled(filterFieldset);
+  map.querySelector('.map__pins').appendChild(pins);
   setAddress();
 }
 
@@ -404,3 +404,78 @@ capacitySelect.addEventListener('change', onSelectChange);
 setAddress();
 
 /*  module4-task2  */
+
+/*  module4-task3  */
+
+var ESC_KEYCODE = 27;
+
+function onCardCloseClick() {
+  this.parentElement.remove();
+}
+
+function onCardClosePress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if(evtKeycode === ENTER_KEYCODE) {
+    this.parentElement.remove();
+  }
+}
+
+function onWindowEscPress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if(evtKeycode === ESC_KEYCODE) {
+    map.querySelector('.popup').remove();
+    this.removeEventListener('keydown', onWindowEscPress);
+  }
+}
+
+function openCard(pinId) {
+  var pinIdNumber = parseInt(pinId);
+  var card = generateCard(offersArray[pinIdNumber], pinIdNumber);
+
+  map.insertBefore(card, filtersContainer);
+  card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+  card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
+  window.addEventListener('keydown', onWindowEscPress);
+}
+
+function removeOtherCard(pinId) {
+  var openedCard = map.querySelector('.popup');
+  var openedCardId = parseInt(openedCard.dataset.id);
+  var pinIdNumber = parseInt(pinId);
+
+  if(pinIdNumber !== openedCardId) {
+    openedCard.remove();
+  }
+}
+
+function openCards(evt) {
+  var pinId = evt.target.dataset.id;
+  var parentId = evt.target.parentElement.dataset.id;
+
+  if(pinId) {
+    openCard(pinId);
+    removeOtherCard(pinId);
+  } else if(parentId) {
+    openCard(parentId);
+    removeOtherCard(parentId);
+  }
+}
+
+function onPinClick(evt) {
+  openCards(evt);
+}
+
+function onPinPress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if (evtKeycode === ENTER_KEYCODE) {
+    openCards(evt);
+  }
+}
+
+map.querySelector('.map__pins').addEventListener('click', onPinClick);
+map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
+
+/*  module4-task3  */
