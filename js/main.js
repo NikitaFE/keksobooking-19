@@ -409,6 +409,10 @@ setAddress();
 
 var ESC_KEYCODE = 27;
 
+var roomType = mainForm.elements.type;
+var roomTimeIn = mainForm.elements.timein;
+var roomTimeOut = mainForm.elements.timeout;
+
 function onCardCloseClick() {
   map.querySelector('.popup').remove();
 }
@@ -475,7 +479,50 @@ function onPinPress(evt) {
   }
 }
 
+function onTypeChange() {
+  var roomPrice = mainForm.elements.price;
+
+  switch (roomType.value) {
+    case 'bungalo':
+      roomPrice.setAttribute('min', '0');
+      break;
+    case 'flat':
+      roomPrice.setAttribute('min', '1000');
+      break;
+    case 'house':
+      roomPrice.setAttribute('min', '5000');
+      break;
+    case 'palace':
+      roomPrice.setAttribute('min', '10000');
+      break;
+
+    default:
+      break;
+  }
+}
+
+function onTimeInChange() {
+  var timeinValue = roomTimeIn.value;
+  var timeoutValue = roomTimeOut.value;
+
+  if (timeinValue !== timeoutValue) {
+    roomTimeOut.value = timeinValue;
+  }
+}
+
+function onTimeOutChange() {
+  var timeinValue = roomTimeIn.value;
+  var timeoutValue = roomTimeOut.value;
+
+  if (timeoutValue !== timeinValue) {
+    roomTimeIn.value = timeoutValue;
+  }
+}
+
 map.querySelector('.map__pins').addEventListener('click', onPinClick);
 map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
+roomType.addEventListener('change', onTypeChange);
+roomTimeIn.addEventListener('change', onTimeInChange);
+roomTimeOut.addEventListener('change', onTimeOutChange);
 
 /*  module4-task3  */
