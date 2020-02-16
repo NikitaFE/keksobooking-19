@@ -146,12 +146,12 @@ function generateOffers(n) {
 
 function generatePin(data, n) {
   var offerElement = pinTemplate.cloneNode(true);
-  var pinImg = offerElement.querySelector('img');
+  var offerElementImg = offerElement.querySelector('img');
 
   offerElement.setAttribute('data-id', n);
-  offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
-  pinImg.src = data.author.avatar;
-  pinImg.alt = data.offer.title;
+  offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - offerElementImg.getAttribute('height')) + 'px;';
+  offerElementImg.src = data.author.avatar;
+  offerElementImg.alt = data.offer.title;
 
   return offerElement;
 }
@@ -283,7 +283,7 @@ var ROOMS_INFO = {
     'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей',
     'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей'
   ]
-}
+};
 
 var mainPin = document.querySelector('.map__pin--main');
 var mainForm = document.querySelector('.ad-form');
@@ -410,28 +410,28 @@ setAddress();
 var ESC_KEYCODE = 27;
 
 function onCardCloseClick() {
-  this.parentElement.remove();
+  map.querySelector('.popup').remove();
 }
 
 function onCardClosePress(evt) {
   var evtKeycode = evt.keyCode;
 
-  if(evtKeycode === ENTER_KEYCODE) {
-    this.parentElement.remove();
+  if (evtKeycode === ENTER_KEYCODE) {
+    map.querySelector('.popup').remove();
   }
 }
 
 function onWindowEscPress(evt) {
   var evtKeycode = evt.keyCode;
 
-  if(evtKeycode === ESC_KEYCODE) {
+  if (evtKeycode === ESC_KEYCODE) {
     map.querySelector('.popup').remove();
-    this.removeEventListener('keydown', onWindowEscPress);
+    window.removeEventListener('keydown', onWindowEscPress);
   }
 }
 
 function openCard(pinId) {
-  var pinIdNumber = parseInt(pinId);
+  var pinIdNumber = parseInt(pinId, 10);
   var card = generateCard(offersArray[pinIdNumber], pinIdNumber);
 
   map.insertBefore(card, filtersContainer);
@@ -442,10 +442,10 @@ function openCard(pinId) {
 
 function removeOtherCard(pinId) {
   var openedCard = map.querySelector('.popup');
-  var openedCardId = parseInt(openedCard.dataset.id);
-  var pinIdNumber = parseInt(pinId);
+  var openedCardId = parseInt(openedCard.dataset.id, 10);
+  var pinIdNumber = parseInt(pinId, 10);
 
-  if(pinIdNumber !== openedCardId) {
+  if (pinIdNumber !== openedCardId) {
     openedCard.remove();
   }
 }
@@ -454,10 +454,10 @@ function openCards(evt) {
   var pinId = evt.target.dataset.id;
   var parentId = evt.target.parentElement.dataset.id;
 
-  if(pinId) {
+  if (pinId) {
     openCard(pinId);
     removeOtherCard(pinId);
-  } else if(parentId) {
+  } else if (parentId) {
     openCard(parentId);
     removeOtherCard(parentId);
   }
