@@ -236,10 +236,9 @@ function generatePhotosNode(photos) {
   return divElements;
 }
 
-function generateCard(data, n) {
+function generateCard(data) {
   var offerElement = cardTemplate.cloneNode(true);
 
-  offerElement.setAttribute('data-id', n);
   offerElement.querySelector('.popup__title').textContent = data.offer.title;
   offerElement.querySelector('.popup__text--address').textContent = data.offer.address;
   offerElement.querySelector('.popup__text--price').textContent = data.offer.price + 'U+20BD/ночь';
@@ -275,14 +274,11 @@ generatePins(offersArray);
 
 var ENTER_KEYCODE = 13;
 var PIN_TIP_HEIGTH = 16;
-var ROOMS_INFO = {
-  amount: [1, 2, 3, 100],
-  messages: [
-    'Для указанного количества комнат можно выбрать количество мест: не для гостей',
-    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя',
-    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей',
-    'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей'
-  ]
+var ROOMS_MESSAGES = {
+  '1': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя',
+  '2': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей',
+  '3': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей',
+  '100': 'Для указанного количества комнат можно выбрать количество мест: не для гостей'
 };
 
 var mainPin = document.querySelector('.map__pin--main');
@@ -368,24 +364,24 @@ function compareRoomsWithGuests() {
   var guestsNumber = parseInt(capacitySelect.value, 10);
 
   switch (roomsNumber) {
-    case ROOMS_INFO.amount[0]:
-      if (guestsNumber !== ROOMS_INFO.amount[0]) {
-        msg = ROOMS_INFO.messages[1];
+    case 1:
+      if (guestsNumber !== 1) {
+        msg = ROOMS_MESSAGES['1'];
       }
       break;
-    case ROOMS_INFO.amount[1]:
-      if (guestsNumber !== ROOMS_INFO.amount[0] && guestsNumber !== ROOMS_INFO.amount[1]) {
-        msg = ROOMS_INFO.messages[2];
+    case 2:
+      if (guestsNumber !== 1 && guestsNumber !== 2) {
+        msg = ROOMS_MESSAGES['2'];
       }
       break;
-    case ROOMS_INFO.amount[2]:
-      if (guestsNumber !== ROOMS_INFO.amount[0] && guestsNumber !== ROOMS_INFO.amount[1] && guestsNumber !== ROOMS_INFO.amount[2]) {
-        msg = ROOMS_INFO.messages[3];
+    case 3:
+      if (guestsNumber !== 1 && guestsNumber !== 2 && guestsNumber !== 3) {
+        msg = ROOMS_MESSAGES['3'];
       }
       break;
-    case ROOMS_INFO.amount[3]:
+    case 100:
       if (guestsNumber !== 0) {
-        msg = ROOMS_INFO.messages[0];
+        msg = ROOMS_MESSAGES['100'];
       }
       break;
   }
@@ -408,6 +404,12 @@ setAddress();
 /*  module4-task3  */
 
 var ESC_KEYCODE = 27;
+var ROOMS_PRICES = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+}
 
 var roomType = mainForm.elements.type;
 var roomTimeIn = mainForm.elements.timein;
@@ -436,7 +438,7 @@ function onWindowEscPress(evt) {
 
 function openCard(pinId) {
   var pinIdNumber = parseInt(pinId, 10);
-  var card = generateCard(offersArray[pinIdNumber], pinIdNumber);
+  var card = generateCard(offersArray[pinIdNumber]);
 
   map.insertBefore(card, filtersContainer);
   card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
@@ -444,12 +446,10 @@ function openCard(pinId) {
   window.addEventListener('keydown', onWindowEscPress);
 }
 
-function removeOtherCard(pinId) {
+function removeCard() {
   var openedCard = map.querySelector('.popup');
-  var openedCardId = parseInt(openedCard.dataset.id, 10);
-  var pinIdNumber = parseInt(pinId, 10);
 
-  if (pinIdNumber !== openedCardId) {
+  if(openedCard) {
     openedCard.remove();
   }
 }
@@ -459,11 +459,11 @@ function openCards(evt) {
   var parentId = evt.target.parentElement.dataset.id;
 
   if (pinId) {
+    removeCard();
     openCard(pinId);
-    removeOtherCard(pinId);
   } else if (parentId) {
+    removeCard();
     openCard(parentId);
-    removeOtherCard(parentId);
   }
 }
 
@@ -484,16 +484,16 @@ function onTypeChange() {
 
   switch (roomType.value) {
     case 'bungalo':
-      roomPrice.setAttribute('min', '0');
+      roomPrice.setAttribute('min', ROOMS_PRICES.bungalo);
       break;
     case 'flat':
-      roomPrice.setAttribute('min', '1000');
+      roomPrice.setAttribute('min', ROOMS_PRICES.flat);
       break;
     case 'house':
-      roomPrice.setAttribute('min', '5000');
+      roomPrice.setAttribute('min', ROOMS_PRICES.house);
       break;
     case 'palace':
-      roomPrice.setAttribute('min', '10000');
+      roomPrice.setAttribute('min', ROOMS_PRICES.palace);
       break;
 
     default:
