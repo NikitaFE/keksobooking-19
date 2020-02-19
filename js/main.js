@@ -404,12 +404,12 @@ setAddress();
 /*  module4-task3  */
 
 var ESC_KEYCODE = 27;
-var ROOMS_PRICES = {
+var priceOfRoomType = {
   'bungalo': 0,
   'flat': 1000,
   'house': 5000,
   'palace': 10000
-}
+};
 
 var roomType = mainForm.elements.type;
 var roomTimeIn = mainForm.elements.timein;
@@ -449,7 +449,7 @@ function openCard(pinId) {
 function removeCard() {
   var openedCard = map.querySelector('.popup');
 
-  if(openedCard) {
+  if (openedCard) {
     openedCard.remove();
   }
 }
@@ -484,16 +484,16 @@ function onTypeChange() {
 
   switch (roomType.value) {
     case 'bungalo':
-      roomPrice.setAttribute('min', ROOMS_PRICES.bungalo);
+      roomPrice.setAttribute('min', priceOfRoomType.bungalo);
       break;
     case 'flat':
-      roomPrice.setAttribute('min', ROOMS_PRICES.flat);
+      roomPrice.setAttribute('min', priceOfRoomType.flat);
       break;
     case 'house':
-      roomPrice.setAttribute('min', ROOMS_PRICES.house);
+      roomPrice.setAttribute('min', priceOfRoomType.house);
       break;
     case 'palace':
-      roomPrice.setAttribute('min', ROOMS_PRICES.palace);
+      roomPrice.setAttribute('min', priceOfRoomType.palace);
       break;
 
     default:
