@@ -124,7 +124,7 @@ function generateOffer(avatar, i) {
       'photos': generateFeatures(getRandom(1, PHOTOS_MAX), 'photos')
     },
     'location': {
-      x: getRandom(halfPinImgWidth, map.offsetWidth - halfPinImgWidth), //  Корректировка меток, чтобы изображения не выходили за край.
+      x: getRandom(halfPinImgWidth, map.offsetWidth - halfPinImgWidth),
       y: getRandom(Y_MIN, Y_MAX)
     }
   };
@@ -144,13 +144,14 @@ function generateOffers(n) {
   offersArray = arr;
 }
 
-function generatePin(data) {
+function generatePin(data, n) {
   var offerElement = pinTemplate.cloneNode(true);
+  var offerElementImg = offerElement.querySelector('img');
 
-  //  забыл про корректировку метки, исправил
-  offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - pinImg.getAttribute('height')) + 'px;';
-  pinImg.src = data.author.avatar;
-  pinImg.alt = data.offer.title;
+  offerElement.setAttribute('data-id', n);
+  offerElement.style = 'left: ' + (data.location.x - halfPinImgWidth) + 'px; top: ' + (data.location.y - offerElementImg.getAttribute('height')) + 'px;';
+  offerElementImg.src = data.author.avatar;
+  offerElementImg.alt = data.offer.title;
 
   return offerElement;
 }
@@ -171,7 +172,6 @@ function translateType(type) {
   }
 }
 
-//  Немного склонений мне в код.
 function generateRoomsAndGuestsText(rooms, guests) {
   var text = '';
 
@@ -180,7 +180,7 @@ function generateRoomsAndGuestsText(rooms, guests) {
   } else if (rooms < 5) {
     text += rooms + ' комнаты для ';
   } else {
-    text += rooms + ' комнат для '; //  Если кто-то поменяет константу на большее значение.
+    text += rooms + ' комнат для ';
   }
 
   if (guests < 2) {
@@ -255,7 +255,7 @@ function generateCard(data) {
 
 function fillFragment(fragment, arr) {
   for (var i = 0; i < arr.length; i++) {
-    fragment.appendChild(generatePin(arr[i]));
+    fragment.appendChild(generatePin(arr[i], i));
   }
 }
 
@@ -269,17 +269,17 @@ function generatePins(data) {
 
 generateOffers(OFFERS_NUMBER);
 generatePins(offersArray);
-// map.querySelector('.map__pins').appendChild(pins);
-// map.insertBefore(generateCard(offersArray[0]), filtersContainer);
 
 /*  module4-task2  */
 
 var ENTER_KEYCODE = 13;
 var PIN_TIP_HEIGTH = 16;
-var MSG_NO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
-var MSG_ONE_GUEST = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя';
-var MSG_TWO_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей';
-var MSG_THREE_GUESTS = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей';
+var ROOMS_MESSAGES = {
+  '1': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя',
+  '2': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей',
+  '3': 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей',
+  '100': 'Для указанного количества комнат можно выбрать количество мест: не для гостей'
+};
 
 var mainPin = document.querySelector('.map__pin--main');
 var mainForm = document.querySelector('.ad-form');
@@ -322,6 +322,7 @@ function getActive() {
   offDisabledAll(mainFormFieldsets);
   offDisabledAll(filterFormElements);
   offDisabled(filterFieldset);
+  map.querySelector('.map__pins').appendChild(pins);
   setAddress();
 }
 
@@ -365,22 +366,22 @@ function compareRoomsWithGuests() {
   switch (roomsNumber) {
     case 1:
       if (guestsNumber !== 1) {
-        msg = MSG_ONE_GUEST;
+        msg = ROOMS_MESSAGES['1'];
       }
       break;
     case 2:
       if (guestsNumber !== 1 && guestsNumber !== 2) {
-        msg = MSG_TWO_GUESTS;
+        msg = ROOMS_MESSAGES['2'];
       }
       break;
     case 3:
       if (guestsNumber !== 1 && guestsNumber !== 2 && guestsNumber !== 3) {
-        msg = MSG_THREE_GUESTS;
+        msg = ROOMS_MESSAGES['3'];
       }
       break;
     case 100:
       if (guestsNumber !== 0) {
-        msg = MSG_NO_GUESTS;
+        msg = ROOMS_MESSAGES['100'];
       }
       break;
   }
@@ -399,3 +400,129 @@ capacitySelect.addEventListener('change', onSelectChange);
 setAddress();
 
 /*  module4-task2  */
+
+/*  module4-task3  */
+
+var ESC_KEYCODE = 27;
+var priceOfRoomType = {
+  'bungalo': 0,
+  'flat': 1000,
+  'house': 5000,
+  'palace': 10000
+};
+
+var roomType = mainForm.elements.type;
+var roomTimeIn = mainForm.elements.timein;
+var roomTimeOut = mainForm.elements.timeout;
+
+function onCardCloseClick() {
+  map.querySelector('.popup').remove();
+}
+
+function onCardClosePress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if (evtKeycode === ENTER_KEYCODE) {
+    map.querySelector('.popup').remove();
+  }
+}
+
+function onWindowEscPress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if (evtKeycode === ESC_KEYCODE) {
+    map.querySelector('.popup').remove();
+    window.removeEventListener('keydown', onWindowEscPress);
+  }
+}
+
+function openCard(pinId) {
+  var pinIdNumber = parseInt(pinId, 10);
+  var card = generateCard(offersArray[pinIdNumber]);
+
+  map.insertBefore(card, filtersContainer);
+  card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+  card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
+  window.addEventListener('keydown', onWindowEscPress);
+}
+
+function removeCard() {
+  var openedCard = map.querySelector('.popup');
+
+  if (openedCard) {
+    openedCard.remove();
+  }
+}
+
+function openCards(evt) {
+  var pinId = evt.target.dataset.id;
+  var parentId = evt.target.parentElement.dataset.id;
+
+  if (pinId) {
+    removeCard();
+    openCard(pinId);
+  } else if (parentId) {
+    removeCard();
+    openCard(parentId);
+  }
+}
+
+function onPinClick(evt) {
+  openCards(evt);
+}
+
+function onPinPress(evt) {
+  var evtKeycode = evt.keyCode;
+
+  if (evtKeycode === ENTER_KEYCODE) {
+    openCards(evt);
+  }
+}
+
+function onTypeChange() {
+  var roomPrice = mainForm.elements.price;
+
+  switch (roomType.value) {
+    case 'bungalo':
+      roomPrice.setAttribute('min', priceOfRoomType.bungalo);
+      break;
+    case 'flat':
+      roomPrice.setAttribute('min', priceOfRoomType.flat);
+      break;
+    case 'house':
+      roomPrice.setAttribute('min', priceOfRoomType.house);
+      break;
+    case 'palace':
+      roomPrice.setAttribute('min', priceOfRoomType.palace);
+      break;
+
+    default:
+      break;
+  }
+}
+
+function onTimeInChange() {
+  var timeinValue = roomTimeIn.value;
+  var timeoutValue = roomTimeOut.value;
+
+  if (timeinValue !== timeoutValue) {
+    roomTimeOut.value = timeinValue;
+  }
+}
+
+function onTimeOutChange() {
+  var timeinValue = roomTimeIn.value;
+  var timeoutValue = roomTimeOut.value;
+
+  if (timeoutValue !== timeinValue) {
+    roomTimeIn.value = timeoutValue;
+  }
+}
+
+map.querySelector('.map__pins').addEventListener('click', onPinClick);
+map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
+roomType.addEventListener('change', onTypeChange);
+roomTimeIn.addEventListener('change', onTimeInChange);
+roomTimeOut.addEventListener('change', onTimeOutChange);
+
+/*  module4-task3  */
