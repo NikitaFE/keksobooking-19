@@ -54,7 +54,7 @@
     window.load(function (offers) {
       offersData = offers;
       window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offersData));
-      window.map.loadPins(window.data.map.querySelector('.map__pins'));
+      window.map.loadPins(offersData);
     });
     setAddress();
   }
