@@ -19,6 +19,7 @@
 
   var mainPinX;
   var mainPinY;
+  var offersData;
 
   function setDisabled(someNode) {
     someNode.setAttribute('disabled', true);
@@ -51,7 +52,8 @@
     offDisabledAll(filterFormElements);
     offDisabled(filterFieldset);
     window.load(function (offers) {
-      window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offers));
+      offersData = offers;
+      window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offersData));
     });
     setAddress();
   }
@@ -131,5 +133,6 @@
 
   window.form = {
     blank: blank
+    offersData: offersData
   };
 })();

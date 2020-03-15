@@ -35,17 +35,16 @@
     }
   }
 
+  console.log(window.form.offersData);
+
   function openCard(pinId) {
     var pinIdNumber = parseInt(pinId, 10);
-    var card;
+    var card = window.card.generate(window.form.offersData[pinIdNumber]);
 
-    window.load(function (offers) {
-      card = window.card.generate(offers[pinIdNumber]);
-      window.data.map.insertBefore(card, filtersContainer);
-      card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
-      card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
-      window.addEventListener('keydown', onWindowEscPress);
-    });
+    window.data.map.insertBefore(card, filtersContainer);
+    card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+    card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
+    window.addEventListener('keydown', onWindowEscPress);
   }
 
   function removeCard() {
