@@ -54,6 +54,8 @@
     window.load(function (offers) {
       offersData = offers;
       window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offersData));
+      window.data.map.querySelector('.map__pins').addEventListener('click', window.map.onPinClick);
+      window.data.map.querySelector('.map__pins').addEventListener('keydown', window.map.onPinPress);
     });
     setAddress();
   }
@@ -132,7 +134,7 @@
   setAddress();
 
   window.form = {
-    blank: blank
+    blank: blank,
     offersData: offersData
   };
 })();

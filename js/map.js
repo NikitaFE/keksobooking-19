@@ -35,8 +35,6 @@
     }
   }
 
-  console.log(window.form.offersData);
-
   function openCard(pinId) {
     var pinIdNumber = parseInt(pinId, 10);
     var card = window.card.generate(window.form.offersData[pinIdNumber]);
@@ -120,9 +118,12 @@
     }
   }
 
-  window.data.map.querySelector('.map__pins').addEventListener('click', onPinClick);
-  window.data.map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
   roomType.addEventListener('change', onTypeChange);
   roomTimeIn.addEventListener('change', onTimeInChange);
   roomTimeOut.addEventListener('change', onTimeOutChange);
+
+  window.map = {
+    onPinClick: onPinClick,
+    onPinPress: onPinPress
+  };
 })();
