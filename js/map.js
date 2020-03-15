@@ -37,12 +37,15 @@
 
   function openCard(pinId) {
     var pinIdNumber = parseInt(pinId, 10);
-    var card = window.card.generate(window.data.offersArray[pinIdNumber]);
+    var card;
 
-    window.data.map.insertBefore(card, filtersContainer);
-    card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
-    card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
-    window.addEventListener('keydown', onWindowEscPress);
+    window.load(function (offers) {
+      card = window.card.generate(offers[pinIdNumber]);
+      window.data.map.insertBefore(card, filtersContainer);
+      card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
+      card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
+      window.addEventListener('keydown', onWindowEscPress);
+    });
   }
 
   function removeCard() {

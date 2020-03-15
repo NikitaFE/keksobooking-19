@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var pins;
-
   function generatePin(data, n) {
     var offerElement = window.data.pinTemplate.cloneNode(true);
     var offerElementImg = offerElement.querySelector('img');
@@ -16,22 +14,20 @@
   }
 
   function fillFragment(fragment, arr) {
-    for (var i = 0; i < arr.length; i++) {
+    for (var i = 0; i < 5; i++) {
       fragment.appendChild(generatePin(arr[i], i));
     }
   }
 
-  function generatePins(data) {
+  var generatePins = function (data) {
     var fragment = document.createDocumentFragment();
 
     fillFragment(fragment, data);
 
     return fragment;
-  }
-
-  pins = generatePins(window.data.offersArray);
+  };
 
   window.pin = {
-    pins: pins
+    generatePins: generatePins
   };
 })();

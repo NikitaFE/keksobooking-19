@@ -50,7 +50,9 @@
     offDisabledAll(mainFormFieldsets);
     offDisabledAll(filterFormElements);
     offDisabled(filterFieldset);
-    window.data.map.querySelector('.map__pins').appendChild(window.pin.pins);
+    window.load(function (offers) {
+      window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offers));
+    });
     setAddress();
   }
 
