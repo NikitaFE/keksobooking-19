@@ -19,6 +19,7 @@
 
   var mainPinX;
   var mainPinY;
+  var offersData;
 
   function setDisabled(someNode) {
     someNode.setAttribute('disabled', true);
@@ -50,7 +51,11 @@
     offDisabledAll(mainFormFieldsets);
     offDisabledAll(filterFormElements);
     offDisabled(filterFieldset);
-    window.data.map.querySelector('.map__pins').appendChild(window.pin.pins);
+    window.load(function (offers) {
+      offersData = offers;
+      window.data.map.querySelector('.map__pins').appendChild(window.pin.generatePins(offersData));
+      window.map.loadPins(offersData);
+    });
     setAddress();
   }
 
@@ -128,6 +133,7 @@
   setAddress();
 
   window.form = {
-    blank: blank
+    blank: blank,
+    offersData: offersData
   };
 })();

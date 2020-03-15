@@ -13,6 +13,7 @@
   var roomType = window.form.blank.elements.type;
   var roomTimeIn = window.form.blank.elements.timein;
   var roomTimeOut = window.form.blank.elements.timeout;
+  var offers;
 
   function onCardCloseClick() {
     window.data.map.querySelector('.popup').remove();
@@ -27,22 +28,21 @@
   }
 
   function onWindowEscPress(evt) {
-    var evtKeycode = evt.code;
-
+    var evtKeycode = evt.keyCode;
     if (evtKeycode === window.util.ESC_KEYCODE) {
       window.data.map.querySelector('.popup').remove();
-      window.removeEventListener('keydown', onWindowEscPress);
+      document.removeEventListener('keydown', onWindowEscPress);
     }
   }
 
   function openCard(pinId) {
     var pinIdNumber = parseInt(pinId, 10);
-    var card = window.card.generate(window.data.offersArray[pinIdNumber]);
+    var card = window.card.generate(offers[pinIdNumber]);
 
     window.data.map.insertBefore(card, filtersContainer);
     card.querySelector('.popup__close').addEventListener('click', onCardCloseClick);
     card.querySelector('.popup__close').addEventListener('keydown', onCardClosePress);
-    window.addEventListener('keydown', onWindowEscPress);
+    document.addEventListener('keydown', onWindowEscPress);
   }
 
   function removeCard() {
@@ -118,9 +118,17 @@
     }
   }
 
-  window.data.map.querySelector('.map__pins').addEventListener('click', onPinClick);
-  window.data.map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
+  var loadPins = function (offersData) {
+    offers = offersData;
+    window.data.map.querySelector('.map__pins').addEventListener('click', onPinClick);
+    window.data.map.querySelector('.map__pins').addEventListener('keydown', onPinPress);
+  };
+
   roomType.addEventListener('change', onTypeChange);
   roomTimeIn.addEventListener('change', onTimeInChange);
   roomTimeOut.addEventListener('change', onTimeOutChange);
+
+  window.map = {
+    loadPins: loadPins
+  };
 })();
