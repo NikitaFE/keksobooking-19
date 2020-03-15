@@ -118,12 +118,16 @@
     }
   }
 
+  var loadPins = function (pins) {
+    pins.addEventListener('click', onPinClick);
+    pins.addEventListener('keydown', onPinPress);
+  };
+
   roomType.addEventListener('change', onTypeChange);
   roomTimeIn.addEventListener('change', onTimeInChange);
   roomTimeOut.addEventListener('change', onTimeOutChange);
 
   window.map = {
-    onPinClick: onPinClick,
-    onPinPress: onPinPress
+    loadPins: loadPins
   };
 })();
